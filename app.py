@@ -69,17 +69,21 @@ class MainWindow(QMainWindow):
 
     def setup_color_list(self):
         color_list_widget = self.ui.listWidget
+        count = 0
+        self.color_ind_map = {}
         for index, class_name in class_dict.items():
             r,g,b = class_color[index]
+            self.color_ind_map[count] = index
             color = QColor(r,g,b)
             color_widget = ColorSelectionItemWidget(color, class_name)
             color_list_widget.addItem(color_widget)
+            count += 1
 
         color_list_widget.itemClicked.connect(self.color_item_selected)
 
     def color_item_selected(self, item):
         index = self.sender().row(item)
-        r,g,b = class_color[index]
+        r,g,b = class_color[self.color_ind_map[index]]
         color = QColor(r,g,b)
         self.draw_color = color
 
