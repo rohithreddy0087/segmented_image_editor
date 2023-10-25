@@ -21,7 +21,7 @@ class CustomGraphicsScene(QGraphicsScene):
             self.last_mouse_position = new_pos
         if self.parent.drawing and self.is_dragging:
             if self.last_position != QPoint():
-                pen = QPen(self.parent.draw_color, 3, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+                pen = QPen(self.parent.draw_color, self.parent.brush_width, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
                 line = QGraphicsLineItem(self.last_position.x(), self.last_position.y(), event.scenePos().x(), event.scenePos().y())
                 line.setPen(pen)
                 self.parent.ui.graphicsView.scene().addItem(line)
