@@ -72,8 +72,8 @@ class MainWindow(QMainWindow):
         count = 0
         self.color_ind_map = {}
         for index, class_name in class_dict.items():
-            r,g,b = class_color[index]
-            self.color_ind_map[count] = index
+            r,g,b = class_color[index-1]
+            self.color_ind_map[count] = index-1
             color = QColor(r,g,b)
             color_widget = ColorSelectionItemWidget(color, class_name)
             color_list_widget.addItem(color_widget)

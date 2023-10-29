@@ -4,12 +4,23 @@ from classes import BatchDeColorize, BatchColorize
 import matplotlib.pyplot as plt
 from skimage import measure
 
+num_classes = 183
+decolorize = BatchDeColorize(num_classes)
+colorize = BatchColorize(num_classes)
+
 def polygons_from_segmented_image(path):
     segmented_image = cv2.imread(path)
 
-    pixels = segmented_image.reshape(-1, 3)
+    segmented_image = cv2.cvtColor(segmented_image, cv2.COLOR_BGR2RGB)
 
+    arr_class2 = decolorize(segmented_image[None, ...])
+    segmented_image = colorize(arr_class2[None, ...]).squeeze(0).transpose([1, 2, 0])
+
+    pixels = segmented_image.reshape(-1, 3)
+    # labels, counts = np.unique(arr_class2, return_counts=True)
+    # print(labels, counts)
     unique_colors = np.unique(pixels, axis=0)
+    # print(unique_colors)
     num_colors = unique_colors.shape[0]
     
     black = np.where((unique_colors == np.array([0,0,0])).all(axis=1))[0]
