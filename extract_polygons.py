@@ -4,6 +4,10 @@ from classes import BatchDeColorize, BatchColorize
 import matplotlib.pyplot as plt
 from skimage import measure
 
+num_classes = 183
+decolorize = BatchDeColorize(num_classes)
+colorize = BatchColorize(num_classes)
+
 def polygons_from_segmented_image(path):
     segmented_image = cv2.imread(path)
 
