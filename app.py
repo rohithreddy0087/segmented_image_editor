@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         self.drawing = False
         self.moving = False
         self.removing = False
+        self.flipping = False
 
         self.load_button = self.ui.pushButton
         self.save_button = self.ui.pushButton_2
@@ -33,6 +34,7 @@ class MainWindow(QMainWindow):
         self.move_button = self.ui.pushButton_4
         self.remove_button = self.ui.pushButton_5
         self.clear_button = self.ui.pushButton_6
+        self.flip_button = self.ui.pushButton_7
 
         self.load_button.clicked.connect(self.load_image)
         self.save_button.clicked.connect(self.save_scene_as_image)
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow):
         self.move_button.clicked.connect(self.move_on_image)
         self.remove_button.clicked.connect(self.remove_on_image)
         self.clear_button.clicked.connect(self.clear_screen)
+        self.flip_button.clicked.connect(self.flip_polygon)
 
         self.brush_width = 3
         self.slider = self.ui.verticalSlider
@@ -72,8 +75,8 @@ class MainWindow(QMainWindow):
         count = 0
         self.color_ind_map = {}
         for index, class_name in class_dict.items():
-            r,g,b = class_color[index]
-            self.color_ind_map[count] = index
+            r,g,b = class_color[index-1]
+            self.color_ind_map[count] = index-1
             color = QColor(r,g,b)
             color_widget = ColorSelectionItemWidget(color, class_name)
             color_list_widget.addItem(color_widget)
@@ -120,12 +123,16 @@ class MainWindow(QMainWindow):
         for i, polygon_item in enumerate(self.old_polygon_items):
             if polygon_item.scene() is not None:
                 self.ui.graphicsView.scene().removeItem(polygon_item)
+
         scene = self.ui.graphicsView.scene()
-        image = QImage(scene.sceneRect().size().toSize(), QImage.Format_ARGB32)
+        image = QImage(self.image.size(), QImage.Format_ARGB32)
         painter = QPainter(image)
-        scene.render(painter, QRectF(image.rect()), QRectF(self.image.rect()))
+        rect = QRectF(self.image.rect())
+        mapped_rect = self.image_item.mapRectToScene(rect)
+        scene.render(painter, QRectF(image.rect()), mapped_rect)
         painter.end()
         image.save(final_save_path)
+
         self.ui.graphicsView.scene().removeItem(self.image_item)
         self.ui.graphicsView.scene().clear()
 
@@ -142,21 +149,31 @@ class MainWindow(QMainWindow):
         self.drawing = False
         self.moving = False
         self.removing = False
+        self.flipping = False
+
+    def flip_polygon(self):
+        self.drawing = False
+        self.moving = False
+        self.removing = False
+        self.flipping = True
 
     def draw_on_image(self):
         self.drawing = True
         self.moving = False
         self.removing = False
+        self.flipping = False
 
     def move_on_image(self):
         self.drawing = False
         self.moving = True
         self.removing = False
+        self.flipping = False
 
     def remove_on_image(self):
         self.drawing = False
         self.moving = False
         self.removing = True
+        self.flipping = False
 
 def catch_exceptions(job_func):
     """Wrapper function for the job_func
