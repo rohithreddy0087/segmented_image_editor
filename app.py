@@ -26,20 +26,28 @@ class MainWindow(QMainWindow):
         self.drawing = False
         self.moving = False
         self.removing = False
+        self.flipping = False
 
-        self.load_button = self.ui.pushButton
-        self.save_button = self.ui.pushButton_2
+        self.load_button_1 = self.ui.pushButton
+        self.save_button_1 = self.ui.pushButton_2
+        self.load_button_2 = self.ui.pushButton_7
+        self.save_button_2 = self.ui.pushButton_9
+
         self.draw_button = self.ui.pushButton_3
+        self.flip_button = self.ui.pushButton_8
         self.move_button = self.ui.pushButton_4
         self.remove_button = self.ui.pushButton_5
         self.clear_button = self.ui.pushButton_6
 
-        self.load_button.clicked.connect(self.load_image)
-        self.save_button.clicked.connect(self.save_scene_as_image)
+        self.load_button_1.clicked.connect(self.load_image_1)
+        self.load_button_2.clicked.connect(self.load_image_2)
+        self.save_button_1.clicked.connect(self.save_image_1)
+        self.save_button_2.clicked.connect(self.save_image_2)
         self.draw_button.clicked.connect(self.draw_on_image)
         self.move_button.clicked.connect(self.move_on_image)
         self.remove_button.clicked.connect(self.remove_on_image)
         self.clear_button.clicked.connect(self.clear_screen)
+        self.flip_button.clicked.connect(self.flip_polygon)
 
         self.brush_width = 3
         self.slider = self.ui.verticalSlider
@@ -48,13 +56,19 @@ class MainWindow(QMainWindow):
         self.slider.setValue(3)
         self.slider.valueChanged.connect(self.on_slider_change)
 
-        self.ui.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.ui.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.ui.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # self.ui.graphicsView.setRenderHint(QPainter.Antialiasing)
         # self.ui.graphicsView.setRenderHint(QPainter.SmoothPixmapTransform)
         # self.ui.graphicsView.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.polygons = {1: [], 2:[]}
+        self.polygon_color = {1: [], 2:[]}
+        self.polygon_items = {1: [], 2:[]}
+        self.old_polygon_items = {1: [], 2:[]}
 
-        self.polygon_items = []
+        self.image_paths = {}
+        self.images = {}
+        self.image_items =  {}
         self.setup_color_list()
         self.show()
         self.setup_graphics_view()
@@ -72,8 +86,8 @@ class MainWindow(QMainWindow):
         count = 0
         self.color_ind_map = {}
         for index, class_name in class_dict.items():
-            r,g,b = class_color[index]
-            self.color_ind_map[count] = index
+            r,g,b = class_color[index-1]
+            self.color_ind_map[count] = index-1
             color = QColor(r,g,b)
             color_widget = ColorSelectionItemWidget(color, class_name)
             color_list_widget.addItem(color_widget)
@@ -87,76 +101,115 @@ class MainWindow(QMainWindow):
         color = QColor(r,g,b)
         self.draw_color = color
 
-    def load_image(self):
-        options = QFileDialog.Options()
-        self.image_path, _ = QFileDialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.jpeg *.bmp);;All Files (*)", options=options)
-        self.polygons, self.polygon_color = polygons_from_segmented_image(self.image_path)
-        # self.polygon_items = []
-        # print(self.polygon_color)
-        if self.image_path:
-            self.ui.graphicsView.scene().clear()
-            self.image = QPixmap(self.image_path)
-            self.image_item = QGraphicsPixmapItem(self.image)
-            # self.ui.graphicsView.fitInView(self.image_item, Qt.KeepAspectRatio)
+    def load_image_1(self):
+        self.load_image(1)
 
+    def load_image_2(self):
+        self.load_image(2)
+
+    def load_image(self, ind):
+        options = QFileDialog.Options()
+        image_path, _ = QFileDialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.jpeg *.bmp);;All Files (*)", options=options)
+        polygons, polygon_color = polygons_from_segmented_image(image_path)
+        self.polygons[ind] = polygons
+        self.polygon_color[ind] = polygon_color
+        self.image_paths[ind] = image_path
+        if image_path:
+            # self.ui.graphicsView.scene().clear()
+            self.image = QPixmap(image_path)
+            self.image_item = QGraphicsPixmapItem(self.image)
+
+            if ind == 2:
+                self.image_item.setPos(self.image.width()+10, 0)
+            
+
+            self.images[ind] = self.image
+            self.image_items[ind] = self.image_item
+            # self.ui.graphicsView.fitInView(self.image_item, Qt.KeepAspectRatio)
             self.ui.graphicsView.scene().addItem(self.image_item)
-            self.polygon_items.clear()
-            for polygon in self.polygons:
-                polygon_item = QGraphicsPolygonItem(QPolygonF([QPoint(p[0], p[1]) for p in polygon]))
+            self.polygon_items[ind].clear()
+            for polygon in polygons:
+                if ind == 2:
+                    polygon_item = QGraphicsPolygonItem(QPolygonF([QPoint(p[0]+self.image.width()+10, p[1]) for p in polygon]))
+                else:
+                    polygon_item = QGraphicsPolygonItem(QPolygonF([QPoint(p[0], p[1]) for p in polygon]))
                 pen = QPen(Qt.white, 2, Qt.DashLine)
                 polygon_item.setPen(pen)
                 self.ui.graphicsView.scene().addItem(polygon_item)
-                self.polygon_items.append(polygon_item)
-            self.old_polygon_items = self.polygon_items.copy()
+                self.polygon_items[ind].append(polygon_item)
+            self.old_polygon_items[ind] = self.polygon_items[ind].copy()
 
-    def save_scene_as_image(self):
-        save_path = self.image_path.split("/")
-        save_path[-1] = save_path[-1].split(".")[0] + "_edited.png" 
+    def save_image_1(self):
+        self.save_image(1)
+
+    def save_image_2(self):
+        self.save_image(2)
+    
+    def save_image(self, ind):
+        save_path = self.image_paths[ind].split("/")
+        save_path[-1] = save_path[-1].split(".")[0] + "_" + str(ind)+  "_edited.png" 
         final_save_path = "/".join(save_path)
-        for i, polygon_item in enumerate(self.polygon_items):
+        for i, polygon_item in enumerate(self.polygon_items[ind]):
             if polygon_item.scene() is not None:
                 self.ui.graphicsView.scene().removeItem(polygon_item)
         
-        for i, polygon_item in enumerate(self.old_polygon_items):
+        for i, polygon_item in enumerate(self.old_polygon_items[ind]):
             if polygon_item.scene() is not None:
                 self.ui.graphicsView.scene().removeItem(polygon_item)
         scene = self.ui.graphicsView.scene()
-        image = QImage(scene.sceneRect().size().toSize(), QImage.Format_ARGB32)
+        image = QImage(self.images[ind].size(), QImage.Format_ARGB32)
         painter = QPainter(image)
-        scene.render(painter, QRectF(image.rect()), QRectF(self.image.rect()))
+        rect = QRectF(self.images[ind].rect())
+        mapped_rect = self.image_items[ind].mapRectToScene(rect)
+        scene.render(painter, QRectF(image.rect()), mapped_rect)
         painter.end()
         image.save(final_save_path)
-        self.ui.graphicsView.scene().removeItem(self.image_item)
-        self.ui.graphicsView.scene().clear()
+        if self.image_items[ind].scene() is not None:
+            self.ui.graphicsView.scene().removeItem(self.image_items[ind])
+        # self.ui.graphicsView.scene().clear()
 
     def clear_screen(self):
-        for i, polygon_item in enumerate(self.polygon_items):
-            if polygon_item.scene() is not None:
-                self.ui.graphicsView.scene().removeItem(polygon_item)
-        
-        for i, polygon_item in enumerate(self.old_polygon_items):
-            if polygon_item.scene() is not None:
-                self.ui.graphicsView.scene().removeItem(polygon_item)
-        self.ui.graphicsView.scene().removeItem(self.image_item)
+        for d in self.polygon_items:
+            for i, polygon_item in enumerate(self.polygon_items[d]):
+                if polygon_item.scene() is not None:
+                    self.ui.graphicsView.scene().removeItem(polygon_item)
+            
+        for d in self.polygon_items:
+            for i, polygon_item in enumerate(self.polygon_items[d]):
+                if polygon_item.scene() is not None:
+                    self.ui.graphicsView.scene().removeItem(polygon_item)
+        for d in self.image_items:
+            if self.image_items[d].scene() is not None:
+                self.ui.graphicsView.scene().removeItem(self.image_item)
         self.ui.graphicsView.scene().clear()
         self.drawing = False
         self.moving = False
         self.removing = False
+        self.flipping = False
+
+    def flip_polygon(self):
+        self.drawing = False
+        self.moving = False
+        self.removing = False
+        self.flipping = True
 
     def draw_on_image(self):
         self.drawing = True
         self.moving = False
         self.removing = False
+        self.flipping = False
 
     def move_on_image(self):
         self.drawing = False
         self.moving = True
         self.removing = False
+        self.flipping = False
 
     def remove_on_image(self):
         self.drawing = False
         self.moving = False
         self.removing = True
+        self.flipping = False
 
 def catch_exceptions(job_func):
     """Wrapper function for the job_func
