@@ -51,7 +51,8 @@ class CustomGraphicsScene(QGraphicsScene):
                     if polygon.containsPoint(event.scenePos(), Qt.OddEvenFill):
                         self.is_dragging = True
                         self.current_polygon_item = polygon_item
-                        # self.clear_area_under_polygon(self.current_polygon_item, Qt.white)
+                        if self.parent.whiten:
+                            self.clear_area_under_polygon(self.current_polygon_item, Qt.white)
                         b,g,r = self.parent.polygon_color[d][i]
                         self.parent.draw_color = QColor(r,g,b)
                         self.current_polygon_index = i
