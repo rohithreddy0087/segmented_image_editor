@@ -1,10 +1,11 @@
-# PyQt5 Image Segmentation and Drawing App
+# PyQt5 Image Segmentation and Drawing App - Dual Version
 
 ## Introduction
 
-Welcome to the PyQt5 Image Segmentation and Drawing App. This application allows you to work with segmented images, highlighting segmented objects based on their colors, move them across the canvas, remove and replace them with white pixels, and perform freehand drawing. It's a powerful tool for image manipulation and annotation.
+This branch has a updated application where we can edit two different images at the same time.
 
-![Screenshot from 2023-10-22 23-52-08](https://github.com/rohithreddy0087/segmented_image_editor/assets/51110057/f7b09f67-3259-45db-8853-529545b81368)
+![Screenshot from 2023-10-31 18-59-15](https://github.com/rohithreddy0087/segmented_image_editor/assets/51110057/c37da16f-8952-44a0-9760-02eda8c640c8)
+
 
 ## Installation
 
