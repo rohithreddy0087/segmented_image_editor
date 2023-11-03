@@ -39,6 +39,8 @@ class MainWindow(QMainWindow):
         self.remove_button = self.ui.pushButton_5
         self.clear_button = self.ui.pushButton_6
 
+        self.check_box = self.ui.checkBox
+
         self.load_button_1.clicked.connect(self.load_image_1)
         self.load_button_2.clicked.connect(self.load_image_2)
         self.save_button_1.clicked.connect(self.save_image_1)
@@ -48,6 +50,9 @@ class MainWindow(QMainWindow):
         self.remove_button.clicked.connect(self.remove_on_image)
         self.clear_button.clicked.connect(self.clear_screen)
         self.flip_button.clicked.connect(self.flip_polygon)
+
+        self.whiten = False
+        self.check_box.stateChanged.connect(self.on_whiten)        
 
         self.brush_width = 3
         self.slider = self.ui.verticalSlider
@@ -100,6 +105,12 @@ class MainWindow(QMainWindow):
         r,g,b = class_color[self.color_ind_map[index]]
         color = QColor(r,g,b)
         self.draw_color = color
+
+    def on_whiten(self, state):
+        if state == Qt.Checked:
+            self.whiten = True
+        else:
+            self.whiten = False            
 
     def load_image_1(self):
         self.load_image(1)
