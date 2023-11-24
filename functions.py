@@ -53,7 +53,7 @@ class CustomGraphicsScene(QGraphicsScene):
                         self.current_polygon_item = polygon_item
                         if self.parent.whiten:
                             self.clear_area_under_polygon(self.current_polygon_item, Qt.white)
-                        b,g,r = self.parent.polygon_color[d][i]
+                        r,g,b = self.parent.polygon_color[d][i]
                         self.parent.draw_color = QColor(r,g,b)
                         self.current_polygon_index = i
                         self.current_dict_index =  d
@@ -87,11 +87,16 @@ class CustomGraphicsScene(QGraphicsScene):
                         for point in polygon_item.polygon():
                             flipped_x = 2 * centroid_x - point.x()
                             flipped_polygon.append(QPointF(flipped_x, point.y()))
-                        b,g,r = self.parent.polygon_color[d][i]
+                        r,g,b = self.parent.polygon_color[d][i]
                         self.parent.draw_color = QColor(r,g,b)
                         clear_rect = QGraphicsPolygonItem(flipped_polygon)
                         clear_rect.setBrush(self.parent.draw_color)
                         self.addItem(clear_rect)
+                        if self.parent.whiten:
+                            clear_poly = QGraphicsPolygonItem(polygon)
+                            clear_poly.setBrush(Qt.white)
+                            self.addItem(clear_poly)
+                        self.polygon_items[d][i] = QGraphicsPolygonItem(flipped_polygon)
 
     def mouseReleaseEvent(self, event):
         if self.parent.moving and self.is_dragging:

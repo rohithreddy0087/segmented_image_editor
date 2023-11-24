@@ -97,12 +97,17 @@ class MainWindow(QMainWindow):
             color_widget = ColorSelectionItemWidget(color, class_name)
             color_list_widget.addItem(color_widget)
             count += 1
+        color_widget = ColorSelectionItemWidget(QColor(255,255,255), "white")
+        color_list_widget.addItem(color_widget)
+        self.color_ind_map[count] = len(class_dict)+1
 
         color_list_widget.itemClicked.connect(self.color_item_selected)
 
     def color_item_selected(self, item):
         index = self.sender().row(item)
         r,g,b = class_color[self.color_ind_map[index]]
+        if index == 183:
+            r,g,b = 255,255,255
         color = QColor(r,g,b)
         self.draw_color = color
 
@@ -121,11 +126,12 @@ class MainWindow(QMainWindow):
     def load_image(self, ind):
         options = QFileDialog.Options()
         image_path, _ = QFileDialog.getOpenFileName(self, "Open Image File", "", "Image Files (*.png *.jpg *.jpeg *.bmp);;All Files (*)", options=options)
-        polygons, polygon_color = polygons_from_segmented_image(image_path)
-        self.polygons[ind] = polygons
-        self.polygon_color[ind] = polygon_color
-        self.image_paths[ind] = image_path
+        
         if image_path:
+            polygons, polygon_color = polygons_from_segmented_image(image_path)
+            self.polygons[ind] = polygons
+            self.polygon_color[ind] = polygon_color
+            self.image_paths[ind] = image_path
             # self.ui.graphicsView.scene().clear()
             self.image = QPixmap(image_path)
             self.image_item = QGraphicsPixmapItem(self.image)
