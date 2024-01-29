@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
         self.moving = False
         self.removing = False
         self.flipping = False
+        self.resizing = False
 
         self.load_button_1 = self.ui.pushButton
         self.save_button_1 = self.ui.pushButton_2
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
         self.move_button = self.ui.pushButton_4
         self.remove_button = self.ui.pushButton_5
         self.clear_button = self.ui.pushButton_6
+        self.resize_button = self.ui.pushButton_10
 
         self.check_box = self.ui.checkBox
 
@@ -50,6 +52,7 @@ class MainWindow(QMainWindow):
         self.remove_button.clicked.connect(self.remove_on_image)
         self.clear_button.clicked.connect(self.clear_screen)
         self.flip_button.clicked.connect(self.flip_polygon)
+        self.resize_button.clicked.connect(self.resize_polygon)
 
         self.whiten = False
         self.check_box.stateChanged.connect(self.on_whiten)        
@@ -60,6 +63,12 @@ class MainWindow(QMainWindow):
         self.slider.setMaximum(100)
         self.slider.setValue(3)
         self.slider.valueChanged.connect(self.on_slider_change)
+
+        self.resize_slider = self.ui.verticalSlider_2
+        self.resize_slider.setMinimum(0)
+        self.resize_slider.setMaximum(100)
+        self.resize_slider.setValue(50)
+        self.resize_slider.valueChanged.connect(self.on_resize_slider_change)
 
         # self.ui.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # self.ui.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -80,6 +89,9 @@ class MainWindow(QMainWindow):
 
     def on_slider_change(self, value):
         self.brush_width = value
+
+    def on_resize_slider_change(self, value):
+        self.scene.resize_polygon(value/50)
         
     def setup_graphics_view(self):
         self.scene = CustomGraphicsScene(self, self.polygon_items)
@@ -209,24 +221,35 @@ class MainWindow(QMainWindow):
         self.moving = False
         self.removing = False
         self.flipping = True
+        self.resizing = False
 
     def draw_on_image(self):
         self.drawing = True
         self.moving = False
         self.removing = False
         self.flipping = False
+        self.resizing = False
 
     def move_on_image(self):
         self.drawing = False
         self.moving = True
         self.removing = False
         self.flipping = False
+        self.resizing = False
 
     def remove_on_image(self):
         self.drawing = False
         self.moving = False
         self.removing = True
         self.flipping = False
+        self.resizing = False
+
+    def resize_polygon(self):
+        self.drawing = False
+        self.moving = False
+        self.removing = False
+        self.flipping = False
+        self.resizing = True
 
 def catch_exceptions(job_func):
     """Wrapper function for the job_func

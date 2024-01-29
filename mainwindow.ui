@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1244</width>
+    <width>1265</width>
     <height>630</height>
    </rect>
   </property>
@@ -99,9 +99,9 @@
    <widget class="QPushButton" name="pushButton_4">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>660</x>
       <y>10</y>
-      <width>89</width>
+      <width>60</width>
       <height>25</height>
      </rect>
     </property>
@@ -112,9 +112,9 @@
    <widget class="QPushButton" name="pushButton_5">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>800</x>
       <y>10</y>
-      <width>89</width>
+      <width>60</width>
       <height>25</height>
      </rect>
     </property>
@@ -125,10 +125,10 @@
    <widget class="QSlider" name="verticalSlider">
     <property name="geometry">
      <rect>
-      <x>1180</x>
-      <y>40</y>
+      <x>1220</x>
+      <y>70</y>
       <width>30</width>
-      <height>561</height>
+      <height>531</height>
      </rect>
     </property>
     <property name="orientation">
@@ -138,22 +138,25 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>1150</x>
-      <y>10</y>
-      <width>91</width>
-      <height>20</height>
+      <x>1220</x>
+      <y>20</y>
+      <width>41</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Brush Slider</string>
     </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButton_6">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>520</x>
       <y>10</y>
-      <width>89</width>
+      <width>60</width>
       <height>25</height>
      </rect>
     </property>
@@ -177,9 +180,9 @@
    <widget class="QPushButton" name="pushButton_8">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>590</x>
       <y>10</y>
-      <width>89</width>
+      <width>60</width>
       <height>25</height>
      </rect>
     </property>
@@ -211,6 +214,48 @@
     </property>
     <property name="text">
      <string>Whiten</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_10">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>10</y>
+      <width>60</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Resize</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_2">
+    <property name="geometry">
+     <rect>
+      <x>1170</x>
+      <y>70</y>
+      <width>30</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>1160</x>
+      <y>20</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Resize  Slider</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
