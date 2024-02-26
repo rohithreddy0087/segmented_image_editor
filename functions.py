@@ -115,6 +115,7 @@ class CustomGraphicsScene(QGraphicsScene):
                         self.polygon_items[d][i] = QGraphicsPolygonItem(flipped_polygon)
 
         if self.parent.resizing and not self.is_dragging:
+            self.parent.resize_slider.setValue(50)
             for d in self.polygon_items:
                 for i, polygon_item in enumerate(self.polygon_items[d]):
                     polygon = polygon_item.polygon()
@@ -148,6 +149,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.addItem(new_polygon_item)
         self.prev_polygon_item = self.current_polygon_item
         self.current_polygon_item = new_polygon_item
+        self.is_dragging = False
 
     def mouseReleaseEvent(self, event):
         if self.parent.moving and self.is_dragging:
